@@ -63,7 +63,7 @@ class Enable(commands.Cog, name="enable"):
             description = self.config["checkChannelMessage"]
 
             embed = discord.Embed(
-                title=f"checkmate | Check Infos",
+                title="checkmate | Check Infos",
                 description=description,
                 color=0xF6E6CC,
             )
@@ -78,6 +78,39 @@ class Enable(commands.Cog, name="enable"):
 
             # Send the message in check channel
             await checkChannel.send(embed=embed, view=view)
+
+            embed = discord.Embed(
+                title="",
+                description="Are you here to attend the event?",
+                color=0xF6E6CC,
+            )
+
+            # Create the button
+            button_role = Button(label="Yes I am !", emoji="✅")
+
+            async def assign_role(interaction):
+                member = interaction.user
+
+                participantRole = discord.utils.get(member.guild.roles, name=self.config["participantRoleName"])
+
+                if not participantRole:
+                    return
+
+                await member.add_roles(participantRole)
+
+                try:
+                    # Send empty message to avoid "interaction failed"" error
+                    await interaction.response.send_message()
+                except:
+                    pass
+
+            button_role.callback = assign_role
+
+            view_role = View()
+            view_role.add_item(button_role)
+
+            # Send the message in check channel
+            await checkChannel.send(embed=embed, view=view_role)
 
             await custom_embed(
                 "Bot enabled!",

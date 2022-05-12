@@ -174,6 +174,7 @@ async def on_setup(guild) -> bool:
     """
     uncheckedRole = discord.utils.get(guild.roles, name=config["uncheckedRoleName"])
     checkedRole = discord.utils.get(guild.roles, name=config["checkedRoleName"])
+    participantRole = discord.utils.get(guild.roles, name=config["participantRoleName"])
 
     checkChannel = discord.utils.get(guild.channels, name=config["checkChannelName"])
 
@@ -181,6 +182,8 @@ async def on_setup(guild) -> bool:
         uncheckedRole = await guild.create_role(name=config["uncheckedRoleName"])
     if not checkedRole:
         checkedRole = await guild.create_role(name=config["checkedRoleName"])
+    if not participantRole:
+        participantRole = await guild.create_role(name=config["participantRoleName"])
 
     for role in guild.roles:
         # Remove all perms for default role

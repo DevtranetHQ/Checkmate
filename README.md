@@ -50,6 +50,7 @@ they should look like this:
     "prefix": "str",
     "checkedRoleName": "str",
     "uncheckedRoleName": "str",
+    "participantRoleName": "str",
     "checkChannelName": "str",
     "userInDbEndpoint": "str",
     "addUserEndpoint": "str",
@@ -70,6 +71,7 @@ they should look like this:
 | prefix                          | the prefix of your discord bot                                              | None    | True     |
 | checkedRoleName                 | the display name of the checked role                                        | None    | True     |
 | uncheckedRoleName               | the display name of the unchecked role                                      | None    | True     |
+| participantRoleName             | the display name of the participant role                                    | None    | True     |
 | checkChannelName                | the display name of the verification channel                                | None    | True     |
 | userInDbEndpoint                | the endpoint to check if the user email is in the db                        | None    | True     |
 | addUserEndpoint                 | the endpoint to link the discord user id to it's account on your website    | None    | True     |
