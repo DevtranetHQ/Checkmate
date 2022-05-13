@@ -25,3 +25,10 @@ def is_author(author):
         return message.author == author
 
     return inner_check
+
+
+def reaction_check(ctx, reaction, user, messageId):
+    """
+    This is a custom check to see if the user reacts with ✅ to a message.
+    """
+    return user == ctx.author and str(reaction.emoji) in ["✅"] and reaction.message.id == messageId

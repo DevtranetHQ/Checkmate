@@ -13,7 +13,7 @@ import asyncio
 
 from validate_email import validate_email
 
-from helpers import checks
+from helpers.checks import reaction_check, is_author
 from helpers.embed import custom_embed
 from helpers.requests import add_user, email_in_endpoint
 
@@ -262,7 +262,7 @@ async def on_check_started(interaction, pendingTasks):
     await member.send(embed=embed)
 
     try:
-        pendingTasks[interaction.user.id] = client.wait_for("message", check=checks.is_author(member), timeout=60 * 10)
+        pendingTasks[interaction.user.id] = client.wait_for("message", check=is_author(member), timeout=60 * 10)
     except asyncio.TimeoutError:
         await custom_embed(
             config["checkProcessTimeOutErrorMessage"],
@@ -308,9 +308,7 @@ async def on_check_started(interaction, pendingTasks):
         )
 
         try:
-            pendingTasks[interaction.user.id] = client.wait_for(
-                "message", check=checks.is_author(member), timeout=60 * 10
-            )
+            pendingTasks[interaction.user.id] = client.wait_for("message", check=is_author(member), timeout=60 * 10)
         except asyncio.TimeoutError:
             await custom_embed(
                 config["checkProcessTimeOutErrorMessage"],
@@ -378,6 +376,28 @@ async def on_check_completed(guild, member, email) -> None:
             member,
             True,
         )
+
+        embed = discord.Embed(
+            title="",
+            description="Are you here to attend the event?",
+            color=0xF6E6CC,
+        )
+
+        msg = await member.send(embed=embed)
+
+        msg.add_reaction("✅")
+        msg.add_reaction("❌")
+
+        confirmation = await client.wait_for("reaction_add", check=reaction_check)
+
+        if confirmation:
+            participantRole = discord.utils.get(member.guild.roles, name=config["participantRoleName"])
+
+            if not participantRole:
+                return
+
+            await member.add_roles(participantRole)
+
     else:
         await custom_embed(
             config["basicErrorMessage"],
