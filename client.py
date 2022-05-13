@@ -385,18 +385,32 @@ async def on_check_completed(guild, member, email) -> None:
 
         msg = await member.send(embed=embed)
 
-        msg.add_reaction("✅")
-        msg.add_reaction("❌")
+        await msg.add_reaction("✅")
+        await msg.add_reaction("❌")
 
-        confirmation = await client.wait_for("reaction_add", check=reaction_check)
+        confirmation = await client.wait_for("reaction_add", check=reaction_check(client, msg.id))
 
-        if confirmation:
+        if confirmation[0].emoji == "✅":
             participantRole = discord.utils.get(member.guild.roles, name=config["participantRoleName"])
 
             if not participantRole:
                 return
 
             await member.add_roles(participantRole)
+
+            await custom_embed(
+                "You were added the " + config["participantRoleName"] + " role!",
+                member,
+                True,
+            )
+        else:
+            await custom_embed(
+                "You were not added the " + config["participantRoleName"] + " role!",
+                member,
+                False,
+            )
+
+        await msg.delete()
 
     else:
         await custom_embed(
