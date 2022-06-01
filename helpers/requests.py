@@ -10,8 +10,8 @@ def email_in_endpoint(url, email) -> bool:
         return False
 
 
-def add_user(url, email, discordId) -> bool:
-    r = req.post(url, json={"email": email, "discordId": discordId})
+def add_user(url, email, discordId, discordUsername) -> bool:
+    r = req.post(url, json={"email": email, "discordId": discordId, "discordUsername": discordUsername})
     if r.status_code == 201:
         return True
     else:

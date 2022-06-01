@@ -346,7 +346,7 @@ async def on_check_completed(guild, member, email) -> None:
     uncheckedRole = discord.utils.get(guild.roles, name=config["uncheckedRoleName"])
     checkedRole = discord.utils.get(guild.roles, name=config["checkedRoleName"])
 
-    res = add_user(config["addUserEndpoint"], email.content, member.id)
+    res = add_user(config["addUserEndpoint"], email.content, member.id, member.name)
 
     if res:
         # Give checked role to the user
