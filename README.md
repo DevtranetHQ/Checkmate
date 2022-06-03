@@ -54,6 +54,7 @@ they should look like this:
     "checkChannelName": "str",
     "userInDbEndpoint": "str",
     "addUserEndpoint": "str",
+    "X-API-KEY": "str",
     "checkChannelMessage": "str",
     "basicErrorMessage": "str",
     "checkProcessAskEmailMessage": "str",
@@ -75,6 +76,7 @@ they should look like this:
 | checkChannelName                | the display name of the verification channel                                | None    | True     |
 | userInDbEndpoint                | the endpoint to check if the user email is in the db                        | None    | True     |
 | addUserEndpoint                 | the endpoint to link the discord user id to it's account on your website    | None    | True     |
+| X-API-KEY                       | secret key that is in the header of every request the bot does              | None    | True     |
 | checkChannelMessage             | the message sent in the check channel below the "start verification button" | None    | True     |
 | basicErrorMessage               | the message shown when an unknown error raises                              | None    | True     |
 | checkProcessAskEmailMessage     | the message shown to the user to ask them their email                       | None    | True     |
