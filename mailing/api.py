@@ -15,7 +15,7 @@ def connect(gmailUser, gmailPassword) -> smtplib.SMTP_SSL:
         socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS4, "localhost")
         socks.wrapmodule(smtplib)
 
-        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+        server = smtplib.SMTP_SSL("smtp.gmail.com", 25)
         server.ehlo()
         server.login(gmailUser, gmailPassword)
         return server
