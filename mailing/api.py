@@ -1,6 +1,7 @@
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
+import socks
 import random
 
 from mailing.template import template
@@ -11,7 +12,10 @@ def connect(gmailUser, gmailPassword) -> smtplib.SMTP_SSL:
     Creates the connection to the SMTP server
     """
     try:
-        server = smtplib.SMTP_SSL("smtp.gmail.com", 25)
+        socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS4, "localhost")
+        socks.wrapmodule(smtplib)
+
+        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
         server.ehlo()
         server.login(gmailUser, gmailPassword)
         return server
