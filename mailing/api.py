@@ -11,7 +11,7 @@ def connect(gmailUser, gmailPassword) -> smtplib.SMTP_SSL:
     Creates the connection to the SMTP server
     """
     try:
-        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+        server = smtplib.SMTP_SSL("smtp.gmail.com", 25)
         server.ehlo()
         server.login(gmailUser, gmailPassword)
         return server
