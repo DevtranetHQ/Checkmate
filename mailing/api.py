@@ -12,10 +12,10 @@ def connect(gmailUser, gmailPassword) -> smtplib.SMTP_SSL:
     Creates the connection to the SMTP server
     """
     try:
-        socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS4, "localhost")
+        socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS4, "127.0.0.1")
         socks.wrapmodule(smtplib)
 
-        server = smtplib.SMTP_SSL("smtp.gmail.com", 25)
+        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
         server.ehlo()
         server.login(gmailUser, gmailPassword)
         return server
