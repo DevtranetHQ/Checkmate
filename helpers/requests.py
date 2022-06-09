@@ -15,7 +15,7 @@ headers = {"X-API-KEY": config["X-API-KEY"]}
 def email_in_endpoint(url, email) -> bool:
     r = req.post(url, json={"email": email}, headers=headers)
     if r.status_code == 200:
-        return True
+        return r.json()["data"]["userRoles"]
     else:
         return False
 

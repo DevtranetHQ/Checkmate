@@ -284,7 +284,9 @@ async def on_check_started(interaction, pendingTasks):
 
     if isValid:
         # Check if the user has an account on the website
-        if email_in_endpoint(config["userInDbEndpoint"], email.content):
+        userRoles = email_in_endpoint(config["userInDbEndpoint"], email.content)
+        
+        if userRoles:
             pass
         else:
             del pendingTasks[interaction.user.id]
@@ -326,7 +328,7 @@ async def on_check_started(interaction, pendingTasks):
 
         # Check if the generated code and the code entered by theuser are the same
         if realCode == userCode.content:
-            client.dispatch("check_completed", guild, member, email)
+            client.dispatch("check_completed", guild, member, email, userRoles)
         # Throw an error if the code is not valid
         else:
             del pendingTasks[interaction.user.id]
@@ -347,7 +349,7 @@ async def on_check_started(interaction, pendingTasks):
 
 
 @client.event
-async def on_check_completed(guild, member, email) -> None:
+async def on_check_completed(guild, member, email, userRoles) -> None:
     """
     The code in this event is executed every time the on_check_completed event is called
     """
@@ -378,6 +380,15 @@ async def on_check_completed(guild, member, email) -> None:
                 False,
             )
             return
+        
+        for roleName in userRoles:
+            role = discord.utils.get(guild.roles, name=roleName)
+            
+            if not role: 
+                role = await guild.create_role(name=roleName)
+                
+            await member.add_roles(role)
+                
 
         await custom_embed(
             config["checkProcessCompletedMessage"],
