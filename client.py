@@ -224,22 +224,25 @@ async def on_setup(guild) -> bool:
         await checkChannel.delete()
 
 
+global pendingTasks
+pendingTasks = {}
+
+
 @client.event
 async def on_check_click(interaction) -> None:
     """
     The code in this event is executed every time a member reacts to a message
     """
-    pendingTasks = {}
     member = interaction.user
 
-    if interaction.user.id in pendingTasks.keys():
-        pendingTasks[interaction.user.id].close()
-
     try:
-        # Send empty message to avoid "interaction failed"" error
+        # Send empty message to avoid "interaction failed" error
         await interaction.response.send_message()
     except:
         pass
+
+    if member.id in pendingTasks.keys():
+        return
 
     if member != client.user:
         client.dispatch("check_started", interaction, pendingTasks)
@@ -264,6 +267,7 @@ async def on_check_started(interaction, pendingTasks):
     try:
         pendingTasks[interaction.user.id] = client.wait_for("message", check=is_author(member), timeout=60 * 10)
     except asyncio.TimeoutError:
+        del pendingTasks[interaction.user.id]
         await custom_embed(
             config["checkProcessTimeOutErrorMessage"],
             member,
@@ -283,6 +287,7 @@ async def on_check_started(interaction, pendingTasks):
         if email_in_endpoint(config["userInDbEndpoint"], email.content):
             pass
         else:
+            del pendingTasks[interaction.user.id]
             await custom_embed(
                 config["checkProcessAccountErrorMessage"],
                 member,
@@ -310,6 +315,7 @@ async def on_check_started(interaction, pendingTasks):
         try:
             pendingTasks[interaction.user.id] = client.wait_for("message", check=is_author(member), timeout=60 * 10)
         except asyncio.TimeoutError:
+            del pendingTasks[interaction.user.id]
             await custom_embed(
                 config["checkProcessTimeOutErrorMessage"],
                 member,
@@ -323,6 +329,7 @@ async def on_check_started(interaction, pendingTasks):
             client.dispatch("check_completed", guild, member, email)
         # Throw an error if the code is not valid
         else:
+            del pendingTasks[interaction.user.id]
             await custom_embed(
                 config["checkProcessCodeErrorMessage"],
                 member,
@@ -331,6 +338,7 @@ async def on_check_started(interaction, pendingTasks):
 
     # Throw an error if the email is not valid
     else:
+        del pendingTasks[interaction.user.id]
         await custom_embed(
             config["checkProcessEmailErrorMessage"],
             member,
