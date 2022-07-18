@@ -418,13 +418,13 @@ async def on_check_completed(guild, member, email, userRoles) -> None:
             await member.add_roles(participantRole)
 
             await custom_embed(
-                "You were added the " + config["participantRoleName"] + " role!",
+                "You just got a " + config["participantRoleName"] + " role!",
                 member,
                 True,
             )
         else:
             await custom_embed(
-                "You were not added the " + config["participantRoleName"] + " role!",
+                "You didn't get a " + config["participantRoleName"] + " role!",
                 member,
                 False,
             )
