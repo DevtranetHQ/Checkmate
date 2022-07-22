@@ -17,7 +17,7 @@ def send_code(to, guildName) -> int:
 
     subject = f"Your verification code is {code}"
 
-    html = template(guildName, code)
+    html = template(code)
 
     message = Mail(
         from_email="checkmate@devtranet.tech",
