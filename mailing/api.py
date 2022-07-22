@@ -15,7 +15,7 @@ def send_code(to, guildName) -> int:
     """
     code = f"{guildName[:3].upper()}{random.randint(1000, 9999)}"
 
-    subject = f"Authentication code for {guildName}"
+    subject = f"Your verification code is {code}"
 
     html = template(code)
 
