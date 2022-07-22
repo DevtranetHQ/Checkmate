@@ -15,7 +15,7 @@ from validate_email import validate_email
 
 from helpers.checks import reaction_check, is_author
 from helpers.embed import custom_embed
-from helpers.requests import add_user, email_in_endpoint
+from helpers.requests import email_in_endpoint
 
 from mailing.api import send_code
 
@@ -285,7 +285,7 @@ async def on_check_started(interaction, pendingTasks):
     if isValid:
         # Check if the user has an account on the website
         userRoles = email_in_endpoint(config["userInDbEndpoint"], email.content)
-        
+
         if userRoles:
             pass
         else:
@@ -307,11 +307,8 @@ async def on_check_started(interaction, pendingTasks):
 
         # Send a verification code to the user
         realCode = send_code(
-            credentials["gmailUser"],
-            credentials["gmailPassword"],
             email.content,
             guild.name,
-            member.name,
         )
 
         try:
@@ -356,87 +353,76 @@ async def on_check_completed(guild, member, email, userRoles) -> None:
     uncheckedRole = discord.utils.get(guild.roles, name=config["uncheckedRoleName"])
     checkedRole = discord.utils.get(guild.roles, name=config["checkedRoleName"])
 
-    res = add_user(config["addUserEndpoint"], email.content, member.id, member.name)
-
-    if res:
-        # Give checked role to the user
-        if checkedRole:
-            await member.add_roles(checkedRole)
-        else:
-            await custom_embed(
-                config["basicErrorMessage"],
-                member,
-                False,
-            )
-            return
-
-        # Remove unchecked role from the user
-        if uncheckedRole:
-            await member.remove_roles(uncheckedRole)
-        else:
-            await custom_embed(
-                config["basicErrorMessage"],
-                member,
-                False,
-            )
-            return
-        
-        for roleName in userRoles:
-            role = discord.utils.get(guild.roles, name=roleName)
-            
-            if not role: 
-                role = await guild.create_role(name=roleName)
-                
-            await member.add_roles(role)
-                
-
-        await custom_embed(
-            config["checkProcessCompletedMessage"],
-            member,
-            True,
-        )
-
-        embed = discord.Embed(
-            title="",
-            description="Are you here to attend the event?",
-            color=0xF6E6CC,
-        )
-
-        msg = await member.send(embed=embed)
-
-        await msg.add_reaction("✅")
-        await msg.add_reaction("❌")
-
-        confirmation = await client.wait_for("reaction_add", check=reaction_check(client, msg.id))
-
-        if confirmation[0].emoji == "✅":
-            participantRole = discord.utils.get(member.guild.roles, name=config["participantRoleName"])
-
-            if not participantRole:
-                return
-
-            await member.add_roles(participantRole)
-
-            await custom_embed(
-                "You were added the " + config["participantRoleName"] + " role!",
-                member,
-                True,
-            )
-        else:
-            await custom_embed(
-                "You were not added the " + config["participantRoleName"] + " role!",
-                member,
-                False,
-            )
-
-        await msg.delete()
-
+    # Give checked role to the user
+    if checkedRole:
+        await member.add_roles(checkedRole)
     else:
         await custom_embed(
             config["basicErrorMessage"],
             member,
             False,
         )
+        return
+
+    # Remove unchecked role from the user
+    if uncheckedRole:
+        await member.remove_roles(uncheckedRole)
+    else:
+        await custom_embed(
+            config["basicErrorMessage"],
+            member,
+            False,
+        )
+        return
+
+    for roleName in userRoles:
+        role = discord.utils.get(guild.roles, name=roleName)
+
+        if not role:
+            role = await guild.create_role(name=roleName)
+
+        await member.add_roles(role)
+
+    await custom_embed(
+        config["checkProcessCompletedMessage"],
+        member,
+        True,
+    )
+
+    embed = discord.Embed(
+        title="",
+        description="Are you here to attend the event?",
+        color=0xF6E6CC,
+    )
+
+    msg = await member.send(embed=embed)
+
+    await msg.add_reaction("✅")
+    await msg.add_reaction("❌")
+
+    confirmation = await client.wait_for("reaction_add", check=reaction_check(client, msg.id))
+
+    if confirmation[0].emoji == "✅":
+        participantRole = discord.utils.get(member.guild.roles, name=config["participantRoleName"])
+
+        if not participantRole:
+            return
+
+        await member.add_roles(participantRole)
+
+        await custom_embed(
+            "You were added the " + config["participantRoleName"] + " role!",
+            member,
+            True,
+        )
+    else:
+        await custom_embed(
+            "You were not added the " + config["participantRoleName"] + " role!",
+            member,
+            False,
+        )
+
+    await msg.delete()
 
 
 async def main() -> None:

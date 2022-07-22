@@ -1,29 +1,15 @@
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-import smtplib
-import socks
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
 import random
 
-from mailing.template import template
+from mailing.web.template import template
 
 
-def connect(gmailUser, gmailPassword) -> smtplib.SMTP_SSL:
-    """
-    Creates the connection to the SMTP server
-    """
-    try:
-        socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS4, "127.0.0.1")
-        socks.wrapmodule(smtplib)
-
-        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-        server.ehlo()
-        server.login(gmailUser, gmailPassword)
-        return server
-    except:
-        raise Exception("Could not connect to the SMTP server...")
+API_KEY = "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"
 
 
-def send_code(gmailUser, gmailPassword, to, guildName, memberName) -> int:
+def send_code(to, guildName) -> int:
     """
     Sends the auth code to the user
     """
@@ -31,22 +17,18 @@ def send_code(gmailUser, gmailPassword, to, guildName, memberName) -> int:
 
     subject = f"Authentication code for {guildName}"
 
-    html = template(guildName, memberName, code)
+    html = template(code)
 
-    body = MIMEText(html, "html")
-
-    msg = MIMEMultipart("alternative")
-    msg.attach(body)
-
-    msg["Subject"] = subject
-    msg["From"] = gmailUser
-    msg["To"] = to
+    message = Mail(
+        from_email="checkmate@devtranet.tech",
+        to_emails=to,
+        subject=subject,
+        html_content=html,
+    )
 
     try:
-        server = connect(gmailUser, gmailPassword)
-
-        server.sendmail(gmailUser, to, msg.as_string())
-        server.close()
+        sg = SendGridAPIClient(API_KEY)
+        sg.send(message)
 
         return code
     except:
