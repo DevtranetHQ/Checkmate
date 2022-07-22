@@ -60,7 +60,7 @@ def template(guildName, code):
                 width: 580px;
             }
 
-            /* This should also be a block element, so that it will fill 100% of the .container */
+            /* This should also be a block element, so that it will fill the .container */
             .content {
                 box-sizing: border-box;
                 display: block;
@@ -372,7 +372,6 @@ def template(guildName, code):
         >
         <table role="presentation" cellpadding="0" cellspacing="0" class="body">
             <tr>
-                <td>&nbsp;</td>
                 <td class="container">
                     <div class="content">
                         <!-- START CENTERED WHITE CONTAINER -->
@@ -520,7 +519,6 @@ def template(guildName, code):
                         <!-- END FOOTER -->
                     </div>
                 </td>
-                <td>&nbsp;</td>
             </tr>
         </table>
     </body>
