@@ -224,37 +224,33 @@ async def on_setup(guild) -> bool:
         await checkChannel.delete()
 
 
-global pendingTasks
-pendingTasks = {}
-
-
 @client.event
-async def on_check_click(interaction) -> None:
+async def on_raw_reaction_add(payload):
     """
-    The code in this event is executed every time a member reacts to a message
+    The code in this event is executed every time the on_raw_reaction_add event is called
     """
-    member = interaction.user
 
-    try:
-        # Send empty message to avoid "interaction failed" error
-        await interaction.response.send_message()
-    except:
-        pass
-
-    if member.id in pendingTasks.keys():
+    if payload.member == client.user:
         return
 
-    if member != client.user:
-        client.dispatch("check_started", interaction, pendingTasks)
+    channel_payload = client.get_channel(payload.channel_id)
+    channel_check = discord.utils.get(channel_payload.guild.channels, name=config["checkChannelName"])
+
+    if channel_payload.id == channel_check.id and str(payload.emoji) == "✅":
+        message = await channel_payload.fetch_message(payload.message_id)
+
+        await message.remove_reaction("✅", payload.member)
+
+        client.dispatch("check_started", payload)
 
 
 @client.event
-async def on_check_started(interaction, pendingTasks):
+async def on_check_started(payload):
     """
     The code in this event is executed every time the on_check_started event is called
     """
-    member = interaction.user
-    guild = client.get_guild(interaction.guild_id)
+    member = payload.member
+    guild = client.get_guild(payload.guild_id)
 
     # Ask for user's email
     embed = discord.Embed(
@@ -265,16 +261,13 @@ async def on_check_started(interaction, pendingTasks):
     await member.send(embed=embed)
 
     try:
-        pendingTasks[interaction.user.id] = client.wait_for("message", check=is_author(member), timeout=60 * 10)
+        email = await client.wait_for("message", check=is_author(member), timeout=60 * 10)
     except asyncio.TimeoutError:
-        del pendingTasks[interaction.user.id]
         await custom_embed(
             config["checkProcessTimeOutErrorMessage"],
             member,
             False,
         )
-
-    email = await pendingTasks[interaction.user.id]
 
     # Check if the email is valid
     try:
@@ -289,7 +282,6 @@ async def on_check_started(interaction, pendingTasks):
         if userRoles:
             pass
         else:
-            del pendingTasks[interaction.user.id]
             await custom_embed(
                 config["checkProcessAccountErrorMessage"],
                 member,
@@ -309,23 +301,19 @@ async def on_check_started(interaction, pendingTasks):
         realCode = send_code(email.content, guild.name, config["SENDGRID_KEY"])
 
         try:
-            pendingTasks[interaction.user.id] = client.wait_for("message", check=is_author(member), timeout=60 * 10)
+            userCode = await client.wait_for("message", check=is_author(member), timeout=60 * 10)
         except asyncio.TimeoutError:
-            del pendingTasks[interaction.user.id]
             await custom_embed(
                 config["checkProcessTimeOutErrorMessage"],
                 member,
                 False,
             )
 
-        userCode = await pendingTasks[interaction.user.id]
-
         # Check if the generated code and the code entered by theuser are the same
         if realCode == userCode.content:
             client.dispatch("check_completed", guild, member, email, userRoles)
         # Throw an error if the code is not valid
         else:
-            del pendingTasks[interaction.user.id]
             await custom_embed(
                 config["checkProcessCodeErrorMessage"],
                 member,
@@ -334,7 +322,6 @@ async def on_check_started(interaction, pendingTasks):
 
     # Throw an error if the email is not valid
     else:
-        del pendingTasks[interaction.user.id]
         await custom_embed(
             config["checkProcessEmailErrorMessage"],
             member,

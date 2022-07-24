@@ -5,7 +5,6 @@ import sys
 import discord
 from discord.ext import commands
 from discord.ext.commands import Context
-from discord.ui import Button, View
 
 from helpers import checks
 from helpers.embed import custom_embed
@@ -21,9 +20,6 @@ class Enable(commands.Cog, name="enable"):
 
         self.client = client
         self.config = config
-
-    async def handle_click(self, interaction):
-        self.client.dispatch("check_click", interaction)
 
     @commands.command(
         name="enable",
@@ -68,16 +64,9 @@ class Enable(commands.Cog, name="enable"):
                 color=0xF6E6CC,
             )
 
-            # Create the button
-            button = Button(label="Start the check process", emoji="✅")
-
-            button.callback = self.handle_click
-
-            view = View()
-            view.add_item(button)
-
             # Send the message in check channel
-            await checkChannel.send(embed=embed, view=view)
+            message = await checkChannel.send(embed=embed)
+            await message.add_reaction("✅")
 
             await custom_embed(
                 "Bot enabled!",
