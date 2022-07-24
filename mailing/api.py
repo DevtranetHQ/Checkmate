@@ -6,10 +6,7 @@ import random
 from mailing.web.template import template
 
 
-API_KEY = "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"
-
-
-def send_code(to, guildName) -> int:
+def send_code(to, guildName, SENDGRID_KEY) -> int:
     """
     Sends the auth code to the user
     """
@@ -27,7 +24,7 @@ def send_code(to, guildName) -> int:
     )
 
     try:
-        sg = SendGridAPIClient(API_KEY)
+        sg = SendGridAPIClient(SENDGRID_KEY)
         sg.send(message)
 
         return code

@@ -306,10 +306,7 @@ async def on_check_started(interaction, pendingTasks):
         await member.send(embed=embed)
 
         # Send a verification code to the user
-        realCode = send_code(
-            email.content,
-            guild.name,
-        )
+        realCode = send_code(email.content, guild.name, config["SENDGRID_KEY"])
 
         try:
             pendingTasks[interaction.user.id] = client.wait_for("message", check=is_author(member), timeout=60 * 10)
