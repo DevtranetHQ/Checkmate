@@ -61,7 +61,7 @@ async def on_ready() -> None:
         checkedRole = discord.utils.get(guild.roles, name=config["checkedRoleName"])
 
         if not uncheckedRole or not checkedRole:
-            return
+            continue
 
         for member in guild.members:
             if uncheckedRole not in member.roles and checkedRole not in member.roles and member != client.user:
