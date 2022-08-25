@@ -375,7 +375,7 @@ async def on_check_completed(guild, member, email, userRoles) -> None:
 
     embed = discord.Embed(
         title="",
-        description="Are you here to attend the event?",
+        description=config["checkProcessAskAttendanceMessage"],
         color=0xF6E6CC,
     )
 
@@ -401,7 +401,7 @@ async def on_check_completed(guild, member, email, userRoles) -> None:
         )
     else:
         await custom_embed(
-            "You were not added the " + config["participantRoleName"] + " role!",
+            config["checkProcessNotAttendingMessage"],
             member,
             False,
         )
