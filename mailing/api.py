@@ -6,7 +6,7 @@ import random
 from mailing.web.template import template
 
 
-def send_code(to, guildName, SENDGRID_KEY) -> int:
+def send_code(to, guildName, memberName, SENDGRID_KEY) -> int:
     """
     Sends the auth code to the user
     """
@@ -14,7 +14,7 @@ def send_code(to, guildName, SENDGRID_KEY) -> int:
 
     subject = f"Your verification code is {code}"
 
-    html = template(code)
+    html = template(guildName, memberName, code)
 
     message = Mail(
         from_email="checkmate@devtranet.tech",

@@ -298,7 +298,7 @@ async def on_check_started(payload):
         await member.send(embed=embed)
 
         # Send a verification code to the user
-        realCode = send_code(email.content, guild.name, config["SENDGRID_KEY"])
+        realCode = send_code(email.content, guild.name, member.name, config["SENDGRID_KEY"])
 
         try:
             userCode = await client.wait_for("message", check=is_author(member), timeout=60 * 10)
