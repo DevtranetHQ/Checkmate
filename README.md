@@ -99,4 +99,4 @@ python client.py
 
 [MIT](https://choosealicense.com/licenses/mit/)
 
-made with 🤍 by Bonsaï#8521
+made with 🤍 by Bonsaï#8521 a founding Engineer at Devtranet :)
